@@ -1,15 +1,10 @@
-// src/Home.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import './styles/userHome.css';
 
-function userHome() {
-  const [step, setStep] = useState(0);
-  const [role, setRole] = useState(null);
-
+function UserHome({ email }) {  // Recibimos el correo como prop
+  const [hasPhoto, setHasPhoto] = useState(false);
   const videoRef = useRef(null);
   const photoRef = useRef(null);
-
-  const [hasPhoto, setHasPhoto] = useState(false);
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -19,7 +14,10 @@ function userHome() {
       .then(stream => {
         let video = videoRef.current;
         video.srcObject = stream;
-        video.play();
+
+        video.onloadedmetadata = () => {
+          video.play();
+        };
       })
       .catch(err => {
         console.error(err);
@@ -39,20 +37,34 @@ function userHome() {
     let ctx = photo.getContext('2d');
     ctx.drawImage(video, 0, 0, width, height);
     setHasPhoto(true);
+
+    // Llamada al backend para enviar la notificación
+    sendNotification(email);
   };
 
   const closePhoto = () => {
     let photo = photoRef.current;
     let ctx = photo.getContext('2d');
-
     ctx.clearRect(0, 0, photo.width, photo.height);
-
     setHasPhoto(false);
+  };
+
+  const sendNotification = (email) => {
+    fetch('http://localhost:5000/send-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email })
+    })
+      .then(response => response.json())
+      .then(data => console.log("Notificación enviada", data))
+      .catch(error => console.error("Error al enviar la notificación:", error));
   };
 
   useEffect(() => {
     getVideo();
-  }, [videoRef]);
+  }, []);
 
   return (
     <div className="App">
@@ -68,4 +80,4 @@ function userHome() {
   );
 }
 
-export default userHome;
+export default UserHome;

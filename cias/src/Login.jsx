@@ -12,9 +12,9 @@ function Login({ onLogin }) {
     axios.post('http://localhost:8081/login', { email, password })
       .then(res => {
         if (res.data === "Login Successful") {
-          onLogin(true); // Llamar a la función `onLogin` con `true` si el login fue exitoso
+          onLogin(true, email); // Pasa el correo al componente App
         } else {
-          onLogin(false); // Llamar a la función `onLogin` con `false` si las credenciales son incorrectas
+          onLogin(false);
         }
       })
       .catch(err => console.log(err));
