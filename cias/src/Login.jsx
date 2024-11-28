@@ -11,8 +11,9 @@ function Login({ onLogin }) {
     event.preventDefault();
     axios.post('http://localhost:8081/login', { email, password })
       .then(res => {
-        if (res.data === "Login Successful") {
-          onLogin(true, email); // Pasa el correo al componente App
+        console.log(res.data); // Verifica la respuesta del servidor
+        if (res.data.message === "Login Successful") {
+          onLogin(true, email, res.data.role); // Pasa el email y rol al componente padre
         } else {
           onLogin(false);
         }

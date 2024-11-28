@@ -17,9 +17,13 @@ app.post('/login', (req, res) => {
     const sql = 'SELECT * FROM login WHERE username = ? AND password = ?';
     
     db.query(sql, [req.body.email, req.body.password], (err, data) => {
+        console.log(data); // <-- Revisa qué devuelve la base de datos
         if (err) return res.json("Error");
         if (data.length > 0) {
-            return res.json("Login Successful");
+            return res.json({ 
+                message: "Login Successful", 
+                role: data[0].role 
+            });
         } else {
             return res.json("Invalid Credentials");
         }
